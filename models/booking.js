@@ -31,3 +31,59 @@ exports.getBookingsByEmail = async (email) => {
     throw error;
   }
 }
+
+// Get all bookings
+exports.getAllBookings = async () => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM bookings ORDER BY booking_date DESC'
+    );
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Update booking
+exports.updateBooking = async (id, bookingData) => {
+  const { name, email, package_id, travel_date, guests, total_price } = bookingData;
+  
+  try {
+    await pool.query(
+      'UPDATE bookings SET name = ?, email = ?, package_id = ?, travel_date = ?, guests = ?, total_price = ? WHERE id = ?',
+      [name, email, package_id, travel_date, guests, total_price, id]
+    );
+    
+    return { 
+      id: parseInt(id), 
+      name, 
+      email, 
+      package_id, 
+      travel_date, 
+      guests, 
+      total_price 
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Delete booking
+exports.deleteBooking = async (id) => {
+  try {
+    await pool.query('DELETE FROM bookings WHERE id = ?', [id]);
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Get booking by ID
+exports.getBookingById = async (id) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM bookings WHERE id = ?', [id]);
+    return rows[0];
+  } catch (error) {
+    throw error;
+  }
+}

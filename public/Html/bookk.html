@@ -495,12 +495,21 @@
     // Load packages for a destination
     async function loadPackages(destinationId) {
         // Show loading indicator
-        document.getElementById('packages-loading').style.display = 'block';
-        document.getElementById('no-packages').style.display = 'none';
-        document.getElementById('package-container').innerHTML = '';
+        const loadingElement = document.getElementById('packages-loading');
+        const noPackagesElement = document.getElementById('no-packages');
+        const packageContainer = document.getElementById('package-container');
+        
+        // Add null checks before accessing properties
+        if (loadingElement) loadingElement.style.display = 'block';
+        if (noPackagesElement) noPackagesElement.style.display = 'none';
+        if (packageContainer) packageContainer.innerHTML = '';
         
         try {
-            const response = await fetch(`/api/destinations/${destinationId}`);
+            // Make actual API request to fetch packages from SQL database
+            console.log("Loading packages for destination:", destinationId);
+            
+            // Use the provided API endpoint
+            const response = await fetch(`http://localhost:3000/api/destinations/${destinationId}`);
             
             if (!response.ok) {
                 throw new Error(`Failed to fetch packages: ${response.status}`);
@@ -508,56 +517,64 @@
             
             const data = await response.json();
             packages = data.packages || [];
+            console.log("Packages loaded from database:", packages);
             
             // Hide loading indicator
-            document.getElementById('packages-loading').style.display = 'none';
+            if (loadingElement) loadingElement.style.display = 'none';
             
             if (packages.length === 0) {
                 // Show no packages message
-                document.getElementById('no-packages').style.display = 'block';
+                if (noPackagesElement) noPackagesElement.style.display = 'block';
                 document.getElementById('step1-next').disabled = true;
                 return;
             }
             
             // Create package options
-            const packageContainer = document.getElementById('package-container');
-            
-            packages.forEach(pkg => {
-                const packageElement = document.createElement('div');
-                packageElement.className = 'package-option';
-                packageElement.dataset.packageId = pkg.id;
+            if (packageContainer) {
+                // Add selection instruction
+                const instruction = document.createElement('p');
+                instruction.textContent = 'Please select a package to continue:';
+                instruction.style.fontWeight = 'bold';
+                packageContainer.appendChild(instruction);
                 
-                packageElement.innerHTML = `
-                    <h3>${pkg.name}</h3>
-                    <div class="package-details">
-                        <p>${pkg.description}</p>
-                        <p>Duration: ${pkg.duration}</p>
-                        <p class="package-price">Price: ${formatCurrency(pkg.price)} per person</p>
-                    </div>
-                `;
-                
-                // Add click event to select package
-                packageElement.addEventListener('click', () => {
-                    // Remove selected class from all packages
-                    document.querySelectorAll('.package-option').forEach(el => {
-                        el.classList.remove('selected');
+                packages.forEach(pkg => {
+                    const packageElement = document.createElement('div');
+                    packageElement.className = 'package-option';
+                    packageElement.dataset.packageId = pkg.id;
+                    
+                    packageElement.innerHTML = `
+                        <h3>${pkg.name}</h3>
+                        <div class="package-details">
+                            <p>${pkg.description}</p>
+                            <p>Duration: ${pkg.duration}</p>
+                            <p class="package-price">Price: ${formatCurrency(pkg.price)} per person</p>
+                        </div>
+                    `;
+                    
+                    // Add click event to select package
+                    packageElement.addEventListener('click', () => {
+                        // Remove selected class from all packages
+                        document.querySelectorAll('.package-option').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+                        
+                        // Add selected class to clicked package
+                        packageElement.classList.add('selected');
+                        
+                        // Store selected package
+                        selectedPackage = pkg;
+                        
+                        // Enable next button
+                        document.getElementById('step1-next').disabled = false;
                     });
                     
-                    // Add selected class to clicked package
-                    packageElement.classList.add('selected');
-                    
-                    // Store selected package
-                    selectedPackage = pkg;
-                    
-                    // Enable next button
-                    document.getElementById('step1-next').disabled = false;
+                    packageContainer.appendChild(packageElement);
                 });
-                
-                packageContainer.appendChild(packageElement);
-            });
+            }
+            
         } catch (error) {
             console.error('Error loading packages:', error);
-            document.getElementById('packages-loading').style.display = 'none';
+            if (loadingElement) loadingElement.style.display = 'none';
             showError(`Failed to load packages: ${error.message}`);
         }
     }
