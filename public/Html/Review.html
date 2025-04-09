@@ -3,73 +3,381 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Planner - Customer Reviews</title>
-    <link rel="stylesheet" href="../Css/review.css"> <!-- Link to your external CSS file -->
+<title>Travel Buddy - Customer Reviews</title>
+<link rel="stylesheet" href="../Css/review.css">
+<style>
+    /* Additional styles for API functionality */
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
 
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.2);
+        color: #28a745;
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #697565;
+    }
+
+    .loading:after {
+        content: '.';
+        animation: dots 1.5s steps(5, end) infinite;
+    }
+
+    @keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60% { content: '...'; }
+        80%, 100% { content: ''; }
+    }
+
+    .destination-selector {
+        margin-bottom: 20px;
+    }
+
+    .destination-selector label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: var(--text-dark);
+    }
+
+    .destination-selector select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #bdc3c7;
+        font-family: inherit;
+    }
+    
+    .no-reviews {
+        text-align: center;
+        padding: 30px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        color: #697565;
+        font-style: italic;
+    }
+    
+    /* Navigation menu */
+    .nav-header {
+        background-color: #2c3e50;
+        padding: 15px 0;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .nav-header ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .nav-header ul li {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    
+    .nav-header ul li a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+    
+    .nav-header ul li a:hover {
+        color: #f39c12;
+    }
+    
+    /* Back button */
+    .back-button {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    
+    .back-button:hover {
+        background-color: #3498db;
+    }
+</style>
 </head>
 <body>
+<!-- Navigation Header -->
+<div class="nav-header">
+    <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="bookk.html">Book</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="Gallery.html">Gallery</a></li>
+        <li><a href="AboutUs.html">About</a></li>
+        <li><a href="ContactUs.html">Contact Us</a></li>
+        <li><a href="Review.html">Reviews</a></li>
+    </ul>
+</div>
+
 <div class="container">
     <h1>Customer Reviews</h1>
-    <div id="reviews-container">
-        <div class="review">
-            <p class="name">Shrey Parekh</p>
-            <p class="rating">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
-            <p>Best website to book your travel plans.</p>
-        </div>
-        <div class="review">
-            <p class="name">Udit Suvarna</p>
-            <p class="rating">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-            <p>Easy and convenient booking and amazing itineraries.</p>
-        </div>
-        <div class="review">
-            <p class="name">Raj Mehta</p>
-            <p class="rating">&#9733;&#9733;&#9733;&#9734;&#9734;</p>
-            <p>Plans could be better but overall good experience.</p>
-        </div>
-    </div>
-    <div id="add-review">
-        <label for="name">Name:</label>
-        <input type="text" id="name">
-        <label for="rating">Rating:</label>
-        <select id="rating">
-            <option value="1">&#9733;</option>
-            <option value="2">&#9733;&#9733;</option>
-            <option value="3">&#9733;&#9733;&#9733;</option>
-            <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
-            <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+    
+    <!-- Alerts for API responses -->
+    <div id="alertBox" style="display: none;" class="alert"></div>
+    
+    <!-- Destination filter -->
+    <div class="destination-selector">
+        <label for="filterDestination">Filter by Destination:</label>
+        <select id="filterDestination">
+            <option value="0">All Destinations</option>
+            <!-- Destinations will be loaded here -->
         </select>
-        <label for="review">Review:</label>
-        <textarea id="review"></textarea>
-        <button onclick="addReview()">Submit Review</button>
     </div>
+    
+    <!-- Reviews container -->
+    <div id="reviews-container">
+        <div class="loading">Loading reviews</div>
+    </div>
+    
+    <!-- Add Review Form -->
+    <div id="add-review">
+        <h2>Write a Review</h2>
+        
+        <div class="destination-selector">
+            <label for="destination">Select Destination:</label>
+            <select id="destination" required>
+                <option value="">Select a destination</option>
+                <!-- Destinations will be loaded here -->
+            </select>
+        </div>
+        
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" required>
+        
+        <label for="rating">Rating:</label>
+        <select id="rating" required>
+            <option value="5">★★★★★ (5/5)</option>
+            <option value="4">★★★★☆ (4/5)</option>
+            <option value="3">★★★☆☆ (3/5)</option>
+            <option value="2">★★☆☆☆ (2/5)</option>
+            <option value="1">★☆☆☆☆ (1/5)</option>
+        </select>
+        
+        <label for="comment">Your Review:</label>
+        <textarea id="comment" rows="4" required></textarea>
+        
+        <button id="submitReview">Submit Review</button>
+    </div>
+    
+    <a href="home.html" class="back-button">Back to Home</a>
 </div>
+
 <script>
-function addReview() {
-    var name = document.getElementById("name").value;
-    var rating = document.getElementById("rating").value;
-    var reviewText = document.getElementById("review").value;
-   
-    var reviewContainer = document.getElementById("reviews-container");
-    var reviewDiv = document.createElement("div");
-    reviewDiv.classList.add("review");
-   
-    var namePara = document.createElement("p");
-    namePara.classList.add("name");
-    namePara.innerText = name;
-   
-    var ratingPara = document.createElement("p");
-    ratingPara.classList.add("rating");
-    ratingPara.innerHTML = "&#9733;".repeat(parseInt(rating)) + "&#9734;".repeat(5 - parseInt(rating));
-   
-    var reviewPara = document.createElement("p");
-    reviewPara.innerText = reviewText;
-   
-    reviewDiv.appendChild(namePara);
-    reviewDiv.appendChild(ratingPara);
-    reviewDiv.appendChild(reviewPara);
-   
-    reviewContainer.appendChild(reviewDiv);
+// Helper function to show alerts
+function showAlert(type, message) {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.className = `alert alert-${type}`;
+    alertBox.innerHTML = message;
+    alertBox.style.display = 'block';
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        alertBox.style.display = 'none';
+    }, 5000);
 }
+
+// Helper function to generate star rating HTML
+function generateStarRating(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '★'; // Full star
+        } else {
+            stars += '☆'; // Empty star
+        }
+    }
+    return stars;
+}
+
+// Load all destinations
+async function loadDestinations() {
+    try {
+        const response = await fetch('/api/destinations');
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch destinations: ${response.status}`);
+        }
+        
+        const destinations = await response.json();
+        
+        // Populate destination dropdowns
+        const filterSelect = document.getElementById('filterDestination');
+        const reviewSelect = document.getElementById('destination');
+        
+        destinations.forEach(destination => {
+            // Add to filter dropdown
+            const filterOption = document.createElement('option');
+            filterOption.value = destination.id;
+            filterOption.textContent = destination.name;
+            filterSelect.appendChild(filterOption);
+            
+            // Add to review form dropdown
+            const reviewOption = document.createElement('option');
+            reviewOption.value = destination.id;
+            reviewOption.textContent = destination.name;
+            reviewSelect.appendChild(reviewOption);
+        });
+        
+        return true;
+    } catch (error) {
+        console.error('Error loading destinations:', error);
+        showAlert('danger', `Failed to load destinations: ${error.message}`);
+        return false;
+    }
+}
+
+// Load reviews, optionally filtered by destination
+async function loadReviews(destinationId = 0) {
+    const reviewsContainer = document.getElementById('reviews-container');
+    reviewsContainer.innerHTML = '<div class="loading">Loading reviews</div>';
+    
+    try {
+        let url = '/api/reviews';
+        
+        // If a specific destination is selected
+        if (destinationId > 0) {
+            url = `/api/reviews/destination/${destinationId}`;
+        }
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch reviews: ${response.status}`);
+        }
+        
+        const reviews = await response.json();
+        
+        // Clear the container
+        reviewsContainer.innerHTML = '';
+        
+        if (reviews.length === 0) {
+            reviewsContainer.innerHTML = '<div class="no-reviews">No reviews available. Be the first to review!</div>';
+            return;
+        }
+        
+        // Add each review to the container
+        reviews.forEach(review => {
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review';
+            
+            reviewElement.innerHTML = `
+                <p class="name">${review.name}</p>
+                <p class="rating">${generateStarRating(review.rating)}</p>
+                <p>${review.comment}</p>
+                <small>Posted: ${new Date(review.review_date).toLocaleDateString()}</small>
+            `;
+            
+            reviewsContainer.appendChild(reviewElement);
+        });
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        reviewsContainer.innerHTML = `
+            <div class="error-message">
+                Failed to load reviews: ${error.message}
+            </div>
+        `;
+    }
+}
+
+// Submit a new review
+async function submitReview() {
+    // Get form values
+    const destinationId = document.getElementById('destination').value;
+    const name = document.getElementById('name').value;
+    const rating = document.getElementById('rating').value;
+    const comment = document.getElementById('comment').value;
+    
+    // Validate form
+    if (!destinationId || !name || !rating || !comment) {
+        showAlert('danger', 'Please fill in all fields');
+        return;
+    }
+    
+    // Create review object
+    const reviewData = {
+        destination_id: parseInt(destinationId),
+        name,
+        rating: parseInt(rating),
+        comment
+    };
+    
+    try {
+        // Send review to API
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to submit review');
+        }
+        
+        // Show success message
+        showAlert('success', 'Your review has been submitted successfully!');
+        
+        // Reset form
+        document.getElementById('destination').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('rating').value = '5';
+        document.getElementById('comment').value = '';
+        
+        // Reload reviews
+        const filterValue = document.getElementById('filterDestination').value;
+        await loadReviews(parseInt(filterValue));
+        
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        showAlert('danger', `Failed to submit review: ${error.message}`);
+    }
+}
+
+// Initialize the page
+async function initPage() {
+    // Load destinations for dropdowns
+    const destinationsLoaded = await loadDestinations();
+    
+    if (destinationsLoaded) {
+        // Load all reviews initially
+        await loadReviews();
+        
+        // Set up event listeners
+        document.getElementById('filterDestination').addEventListener('change', function() {
+            loadReviews(parseInt(this.value));
+        });
+        
+        document.getElementById('submitReview').addEventListener('click', submitReview);
+    }
+}
+
+// Call initialization when page loads
+document.addEventListener('DOMContentLoaded', initPage);
 </script>
 </body>
 </html>

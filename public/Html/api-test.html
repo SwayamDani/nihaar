@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Buddy API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: #3c3d37;
+            text-align: center;
+        }
+        
+        .test-section {
+            background-color: #f5f5f5;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+            color: #697565;
+        }
+        
+        .result {
+            background-color: #ecdfcc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: auto;
+            max-height: 300px;
+        }
+        
+        button {
+            background-color: #697565;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #3c3d37;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+        
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Travel Buddy API Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Database Connection</h2>
+        <p>This test will check if the application can connect to the database.</p>
+        <button id="test-db">Run Database Test</button>
+        <div id="db-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Get All Destinations</h2>
+        <p>This test will fetch all destinations from the API.</p>
+        <button id="test-destinations">Get Destinations</button>
+        <div id="destinations-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Get Destination Details</h2>
+        <p>This test will fetch details for a specific destination.</p>
+        <label for="destination-id">Destination ID:</label>
+        <input type="number" id="destination-id" value="1" min="1" style="width: 60px;">
+        <button id="test-destination-details">Get Details</button>
+        <div id="destination-details-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Create Booking</h2>
+        <p>This test will attempt to create a new booking.</p>
+        <button id="test-create-booking">Create Test Booking</button>
+        <div id="booking-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Add Review</h2>
+        <p>This test will attempt to add a new review.</p>
+        <button id="test-add-review">Add Test Review</button>
+        <div id="review-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <script>
+        // Helper function to display results
+        function showResult(elementId, success, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            const statusClass = success ? 'success' : 'error';
+            const statusText = success ? '✅ Success' : '❌ Error';
+            
+            let content = `<strong class="${statusClass}">${statusText}</strong><br>`;
+            
+            if (typeof data === 'object') {
+                content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } else {
+                content += `<pre>${data}</pre>`;
+            }
+            
+            element.innerHTML = content;
+        }
+        
+        // Database connection test (server-side only)
+        document.getElementById('test-db').addEventListener('click', async () => {
+            showResult('db-result', true, 'Database connection test must be run on the server side. Check server logs after starting the application.');
+        });
+        
+        // Test get all destinations
+        document.getElementById('test-destinations').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/destinations');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showResult('destinations-result', true, data);
+            } catch (error) {
+                showResult('destinations-result', false, `Failed to fetch destinations: ${error.message}`);
+            }
+        });
+        
+        // Test get destination details
+        document.getElementById('test-destination-details').addEventListener('click', async () => {
+            const id = document.getElementById('destination-id').value;
+            
+            try {
+                const response = await fetch(`/api/destinations/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showResult('destination-details-result', true, data);
+            } catch (error) {
+                showResult('destination-details-result', false, `Failed to fetch destination details: ${error.message}`);
+            }
+        });
+        
+        // Test create booking
+        document.getElementById('test-create-booking').addEventListener('click', async () => {
+            const testBooking = {
+                name: "Test User",
+                email: "test@example.com",
+                package_id: 1,
+                travel_date: new Date().toISOString().split('T')[0], // Today's date
+                guests: 2
+            };
+            
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testBooking)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.error || 'Unknown error'}`);
+                }
+                
+                const data = await response.json();
+                showResult('booking-result', true, data);
+            } catch (error) {
+                showResult('booking-result', false, `Failed to create booking: ${error.message}`);
+            }
+        });
+        
+        // Test add review
+        document.getElementById('test-add-review').addEventListener('click', async () => {
+            const testReview = {
+                name: "Test Reviewer",
+                destination_id: 1,
+                rating: 5,
+                comment: "This is a test review created by the API test page!"
+            };
+            
+            try {
+                const response = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testReview)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.error || 'Unknown error'}`);
+                }
+                
+                const data = await response.json();
+                showResult('review-result', true, data);
+            } catch (error) {
+                showResult('review-result', false, `Failed to add review: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -201,6 +201,36 @@
             background-color: rgb(60, 61, 55); /* Darker greyish green for hover */
             transform: scale(1.1);
         }
+        
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #697565;
+        }
+
+        .loading:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+
+        /* Error message */
+        .error-message {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
 
         /* Media Queries */
         @media (max-width: 768px) {
@@ -260,7 +290,7 @@
 
     <!-- Header -->
     <header class="header">
-        <div class="logo"><a href="home.html" style="text-decoration: none; color: #ECDFCC;">Travel</a></div>
+        <div class="logo"><a href="home.html" style="text-decoration: none; color: #ECDFCC;">Travel Buddy</a></div>
         <nav>
             <ul>
                 <li><a href="home.html">Home</a></li>
@@ -277,165 +307,87 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <img src="https://cdn.wallpapersafari.com/2/11/FHKgaY.jpg" alt="Bali Landscape">
+        <div class="hero-content">
+            <h1>Discover Amazing Destinations</h1>
+            <p>Let us help you plan your perfect getaway</p>
+            <a href="#destinations" class="cta-button">Explore Destinations</a>
+        </div>
     </section>
 
     <section id="destinations" class="gallery">
         <h2>Explore Our Featured Destinations</h2>
         <div class="gallery-container">
-            <!-- Bali Card -->
-            <div class="card" onclick="window.location.href='bali.html';">
-                <img src="https://media.gettyimages.com/id/1021637528/video/4k-time-lapse-movie-sunrise-scene-of-pura-ulun-danu-bratan-temple-bali-indonesia.jpg?s=640x640&k=20&c=p9UyryVV7wIwkLtIpVVkLQ-XbqmtzSd8pZLipINeFEY=" alt="Bali">
-                <div class="card-content">
-                    <h3>Bali</h3>
-                    <p>Explore Bali’s stunning beaches, lush rice terraces, and tranquil temples, offering a perfect balance of relaxation and adventure for every type of traveler.</p>
-                </div>
-            </div>
-    
-            <!-- Los Angeles Card -->
-            <div class="card" onclick="window.location.href='la.html';">
-                <img src="https://wallpapercave.com/wp/wp1825952.jpg" alt="Los Angeles">
-                <div class="card-content">
-                    <h3>Los Angeles</h3>
-                    <p>From the glitzy streets of Hollywood to the sandy beaches of Santa Monica, Los Angeles offers a perfect blend of entertainment, culture, and sun.</p>
-                </div>
-            </div>
-     
-            <!-- New York Card -->
-            <div class="card" onclick="window.location.href='ny.html';">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREcPLSdBjJl_OO0AvL6UCN8AavVdwm-x9dmw&s" alt="New York">
-                <div class="card-content">
-                    <h3>New York</h3>
-                    <p>Explore the diverse culture of New York with its iconic landmarks, vibrant streets, world-class museums, and unparalleled energy that makes it truly unique.</p>
-                </div>
-            </div>
-    
-             <!-- Paris Card -->
-            <div class="card" onclick="window.location.href='paris.html';">
-                    <img src="https://images2.alphacoders.com/546/546391.jpg" alt="Paris">
-                <div class="card-content">
-                    <h3>Paris</h3>
-                        <p>Discover Paris, the city of love, with its romantic streets, beautiful parks, and iconic landmarks like the Eiffel Tower, perfect for a cultural escape.</p>                    </div>
-                </div>
-            
-                <!-- Greece Card -->
-            <div class="card" onclick="window.location.href='greece.html';">
-                <img src="https://img.freepik.com/free-photo/temple-architecture-from-ancient-greek-civilization_23-2151664694.jpg" alt="Greece">
-                <div class="card-content">
-                    <h3>Greece</h3>
-                    <p>Immerse yourself in Greece's ancient history, from the Acropolis in Athens to the beautiful beaches of Santorini, offering a perfect blend of heritage and natural beauty.</p>
-                </div>
-            </div>
-    
-            <!-- Bora Bora Card -->
-            <div class="card" onclick="window.location.href='bora.html';">
-                <img src="https://c4.wallpaperflare.com/wallpaper/717/474/334/sunset-tropical-sea-beach-bora-bora-bungalows-in-water-pond-coconut-trees-red-sky-clouds-hd-wallpaper-for-desktop-3840%D1%852160-wallpaper-preview.jpg" alt="Bora Bora">
-                <div class="card-content">
-                    <h3>Bora Bora</h3>
-                    <p>Known for its crystal-clear waters and luxury resorts, Bora Bora is the ideal destination for a serene beach vacation, offering privacy and breathtaking views.</p>
-                </div>
-            </div>
-    
-            <!-- Boston Card -->
-            <div class="card" onclick="window.location.href='boston.html';">
-                <img src="https://c4.wallpaperflare.com/wallpaper/119/467/769/city-cityscape-aerial-view-boston-wallpaper-preview.jpg" alt="Boston">
-                <div class="card-content">
-                    <h3>Boston</h3>
-                    <p>Experience the historic charm of Boston with its cobbled streets, renowned universities, and iconic landmarks, making it a vibrant city with rich culture.</p>
-                </div>
-            </div>
-    
-
-            
-            <!-- Italy Card -->
-            <div class="card" onclick="window.location.href='italy.html';">
-                <img src="https://media.gettyimages.com/id/1470127261/video/beautiful-landscape-of-a-coastal-fishing-village-city-of-the-cinque-terre-in-riomaggiore.jpg?s=640x640&k=20&c=f_RvF0Bx6SoU10VKzmQX_r9ubBGB_AXvRf9zDurOwT8=" alt="Italy">
-                <div class="card-content">
-                    <h3>Italy</h3>
-                    <p>From the canals of Venice to the art-filled streets of Florence, Italy is a must-see destination for those seeking history, culture, and delicious cuisine.</p>
-                </div>
-            </div>
-    
-            <!-- Germany Card -->
-            <div class="card" onclick="window.location.href='germany.html';">
-                <img src="https://4kwallpapers.com/images/walls/thumbs_2t/13552.jpg" alt="Germany">
-                <div class="card-content">
-                    <h3>Germany</h3>
-                    <p>Germany offers a mix of stunning landscapes, vibrant cities like Berlin, and rich history, with castles, museums, and festivals around every corner.</p>
-                </div>
-            </div>
-    
-            <!-- Finland Card -->
-            <div class="card" onclick="window.location.href='finland.html';">
-                <img src="https://images3.alphacoders.com/111/1118979.jpg" alt="Finland">
-                <div class="card-content">
-                    <h3>Finland</h3>
-                    <p>Finland is known for its serene landscapes, the magical Northern Lights, and vast forests, making it the perfect destination for nature lovers and adventure seekers.</p>
-                </div>
-            </div>
-    
-            <!-- Russia Card -->
-            <div class="card" onclick="window.location.href='russia.html';">
-                <img src="https://images.pexels.com/photos/8285167/pexels-photo-8285167.jpeg?cs=srgb&dl=pexels-67117688-8285167.jpg&fm=jpg" alt="Russia">
-                <div class="card-content">
-                    <h3>Russia</h3>
-                    <p>Russia is a land of contrast, offering stunning cities like St. Petersburg and Moscow, along with vast natural beauty, including Siberian forests and Lake Baikal.</p>
-                </div>
-            </div>
-
-            <!-- Switzerland Card -->
-            <div class="card" onclick="window.location.href='sz.html';">
-                <img src="https://images.travelandleisureasia.com/wp-content/uploads/sites/2/2023/11/29111159/lauterbrunnen.jpeg" alt="Switzerland">
-                <div class="card-content">
-                    <h3>Switzerland</h3>
-                    <p>Switzerland is a country of breathtaking diversity, with its charming cities like Zurich and Geneva, along with the majestic Swiss Alps, serene lakes like Lake Geneva and Lake Lucerne, and picturesque villages nestled in the mountains.</p>                </div>
-            </div>
+            <!-- Loading indicator - will be replaced with actual destinations -->
+            <div class="loading">Loading destinations</div>
         </div>
     </section>
     
-        
     <!-- Footer -->
     <footer id="contact" class="footer">
         <div class="footer-content">
             <p>Contact Us: info@travelbuddy.com</p>
+            <p>© 2025 Travel Buddy. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Load API script -->
     <script src="/js/api.js"></script>
+    
+    <!-- Main script that uses the API -->
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        try {
-        // Get destinations container
         const container = document.querySelector('.gallery-container');
-        if (!container) return;
         
-        // Show loading message
-        container.innerHTML = '<p>Loading destinations...</p>';
-        
-        // Get destinations
-        const destinations = await getDestinations();
-        
-        // Clear container
-        container.innerHTML = '';
-        
-        // Add destinations to container
-        destinations.forEach(destination => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = function() {
-            window.location.href = `/${destination.name.toLowerCase()}.html?id=${destination.id}`;
-            };
+        try {
+            // Call the API to get destinations
+            const destinations = await getDestinations();
             
-            card.innerHTML = `
-            <img src="${destination.image_url || 'https://via.placeholder.com/300x200'}" alt="${destination.name}">
-            <div class="card-content">
-                <h3>${destination.name}</h3>
-                <p>${destination.description ? destination.description.substring(0, 100) + '...' : ''}</p>
-            </div>
-            `;
+            // Clear the loading indicator
+            container.innerHTML = '';
             
-            container.appendChild(card);
-        });
+            if (destinations.length === 0) {
+                container.innerHTML = '<div class="error-message">No destinations found. Please try again later.</div>';
+                return;
+            }
+            
+            // Create destination cards
+            destinations.forEach(destination => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // Get lowercase destination name for the link
+                const destinationUrl = destination.name ? destination.name.toLowerCase().replace(/\s+/g, '') + '.html' : '#';
+                
+                card.onclick = function() {
+                    window.location.href = destinationUrl;
+                };
+                
+                // Use placeholder image if destination doesn't have one
+                const imageUrl = destination.image_url || 'https://via.placeholder.com/300x200?text=Travel+Destination';
+                
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${destination.name || 'Travel Destination'}">
+                    <div class="card-content">
+                        <h3>${destination.name || 'Destination'}</h3>
+                        <p>${destination.description ? 
+                            (destination.description.length > 100 ? 
+                                destination.description.substring(0, 100) + '...' : 
+                                destination.description) : 
+                            'Explore this amazing destination with our travel packages.'}
+                        </p>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
         } catch (error) {
-        console.error('Error:', error);
+            console.error('Failed to load destinations:', error);
+            container.innerHTML = `
+                <div class="error-message">
+                    Sorry, we couldn't load the destinations at this time. Please try again later.
+                </div>
+            `;
         }
     });
     </script>
